@@ -1,6 +1,9 @@
 // app/utils/export.js
 import { utils, write } from 'xlsx';
 
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
 export const exportToExcel = (expenses) => {
   const worksheet = utils.json_to_sheet(expenses);
   const workbook = utils.book_new();
@@ -43,3 +46,18 @@ export const exportToCSV = (expenses) => {
   link.click();
   URL.revokeObjectURL(url);
 };
+
+export const exportToPDF = (expenses) => {
+  const doc = new jsPDF();
+  doc.autoTable({
+    head: [['Title', 'Amount', 'Category', 'Date']],
+    body: expenses.map(expense => [
+      expense.title,
+      expense.amount,
+      expense.category,
+      new Date(expense.date).toLocaleDateString()
+    ])
+  });
+  doc.save('expenses.pdf');
+};
+
